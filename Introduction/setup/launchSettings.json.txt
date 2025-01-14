@@ -1,0 +1,138 @@
+1. In Solution Explorer, expand the Properties folder and select launchSettings.json.
+2. Change ASPNETCORE_ENVIRONMENT to Production.
+3.
+-------------------------------------------------------------------------------------------------------------------------- 
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:23456",
+      "sslPort": 0
+    }
+  },
+  "profiles": {
+    "IntroMVC": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:12345",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "DevelopmentProduction"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "DevelopmentProduction"
+      }
+    }
+  }
+}
+--------------------------------------------------------------------------------------------------------------------------
+4. Run the site, navigate to http://localhost:12345/invalid. The friendly error page displays again.
+5. Change ASPNETCORE_ENVIRONMENT back to Development.
+6. 
+--------------------------------------------------------------------------------------------------------------------------
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:23456",
+      "sslPort": 0
+    }
+  },
+  "profiles": {
+    "IntroMVC": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:12345",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "ProductionDevelopment"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "ProductionDevelopment"
+      }
+    }
+  }
+}
+--------------------------------------------------------------------------------------------------------------------------
+7. Save the file, refresh the invalid page, the detailed error message is displayed.
+Program.cs
+8. Delete the default exception handler, the middleware that throws an error and "Hello" middleware delegates.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.UseExceptionHandler("/error.html");
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+app.UseFileServer();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.Value.Contains("invalid"))
+    {
+        throw new Exception("ERROR!");
+    }
+
+    await next();
+});
+
+app.Use(async (context, next) =>
+{
+    await context.Response.WriteAsync("<h1>Hello from Use</h1>");
+    await next();
+    await context.Response.WriteAsync("<h1>Hello again from Use</h1>");
+});
+
+app.Run(async context => await context.Response.WriteAsync("<h1>Hello from Run</h1>"));
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+9. Add middleware to specify routing and a default route.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.UseRouting();
+
+app.UseFileServer();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+
+10. Run the site, a different error occurs. The browser doesn't even appear. This error will be in the console window. This one indicates that a call to add controllers is missing.
+11. Configure MVC services.
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllersWithViews();
+
+var app = builder.Build();
+
+app.UseRouting();
+
+app.UseFileServer();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+12. Run the site, its functional again.

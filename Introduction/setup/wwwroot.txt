@@ -1,0 +1,105 @@
+1.In Solution Explorer, right-click the project and select Add / New Folder. Name it wwwroot.
+2.Download wwwroot.zip. Uncompress the contents and drag them into the wwwroot folder of the Solution Explorer.
+3.Run the site, wwwroot/index.html appears.
+4.Click the link for Page One, pageone.html appears.
+5.Click the link for Page Two, since there is no pagetwo.html, the other middleware responds.
+
+6. Program.cs
+Error Handling
+Add some middleware that will throw an exception if the request contains the word invalid.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.UseFileServer();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.Value.Contains("invalid"))
+    {
+        throw new Exception("ERROR!");
+    }
+
+    await next();
+});
+
+app.Use(async (context, next) =>
+{
+    await context.Response.WriteAsync("<h1>Hello from Use</h1>");
+    await next();
+    await context.Response.WriteAsync("<h1>Hello again from Use</h1>");
+});
+
+app.Run(async context => await context.Response.WriteAsync("<h1>Hello from Run</h1>"));
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+7.Run the site, navigate to http://localhost:12345/invalid. A detailed error message will appear.
+8.Add middleware to handle an exception.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.UseExceptionHandler("/error.html");
+
+app.UseFileServer();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.Value.Contains("invalid"))
+    {
+        throw new Exception("ERROR!");
+    }
+
+    await next();
+});
+
+app.Use(async (context, next) =>
+{
+    await context.Response.WriteAsync("<h1>Hello from Use</h1>");
+    await next();
+    await context.Response.WriteAsync("<h1>Hello again from Use</h1>");
+});
+
+app.Run(async context => await context.Response.WriteAsync("<h1>Hello from Run</h1>"));
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+
+9. Run the site, navigate to http://localhost:12345/invalid. Run the site, navigate to http://localhost:12345/invalid. A friendly error page now displays.
+10. Add some middleware to present a more detailed error message, while in development mode.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.UseExceptionHandler("/error.html");
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+app.UseFileServer();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.Value.Contains("invalid"))
+    {
+        throw new Exception("ERROR!");
+    }
+
+    await next();
+});
+
+app.Use(async (context, next) =>
+{
+    await context.Response.WriteAsync("<h1>Hello from Use</h1>");
+    await next();
+    await context.Response.WriteAsync("<h1>Hello again from Use</h1>");
+});
+
+app.Run(async context => await context.Response.WriteAsync("<h1>Hello from Run</h1>"));
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+Run the site, navigate to http://localhost:12345/invalid. The detailed error message appears again.

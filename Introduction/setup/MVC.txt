@@ -1,0 +1,119 @@
+This part of the walkthrough will introduce MVC.
+
+1. Click Create a new project.
+Language: C#
+Project type: Web
+Select the ASP.NET Core Empty template
+Click Next
+
+2. Configure your new project
+Project name: IntroMVC
+Location: a directory of your choosing
+Solution name: IntroMVC
+Place solution and project in the same directory: unselected
+Click Next
+
+3. Additional information
+Framework: .NET 8.0
+Configure for HTTPS: unselected
+Enable Docker: unselected
+Do not use top-level statements: unselected
+Click Create
+
+4. Run the site.
+
+Program.cs
+5. In the browser, navigate to http://localhost:12345/hi (12345 is an example TCP port, your value will be different); the page won't be found, because the existing middleware is only looking for the root page.
+6. Inspect the existing middleware and notice where the Hello World! response is written.
+7. Delete the existing middleware.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.MapGet("/", () => "Hello World!");
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+8. Run the site, a 404 will be returned because there is no middleware to respond.
+9. Add a terminal middleware delegate to the application's request pipeline.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.Run(async context => await context.Response.WriteAsync("<h1>Hello from Run</h1>"));
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+10. Run the site, the heading will be returned.
+11. In the browser, navigate to http://localhost:12345/hi; the URL won't matter, because the existing middleware responds to all requests.
+12. Add another terminal middleware delegate to the application's request pipeline.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.Run(async context => await context.Response.WriteAsync("<h1>Hello from Run</h1>"));
+
+app.Run(async context => await context.Response.WriteAsync("Text"));
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+13. Run the site, the second middleware delegate isn't invoked because the first one terminates the pipeline.
+14. Comment out the first middleware delegate.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+//app.Run(async context => await context.Response.WriteAsync("<h1>Hello from Run</h1>"));
+
+app.Run(async context => await context.Response.WriteAsync("Text"));
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+15. Run the site, the other delegate responds.
+16. Uncomment the first delegate and delete the second one.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+//app.Run(async context => await context.Response.WriteAsync("<h1>Hello from Run</h1>"));
+
+app.Run(async context => await context.Response.WriteAsync("Text"));
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+17. Add a Use middleware delegate before the run delegate.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.Use(async (context, next) =>
+{
+    await context.Response.WriteAsync("<h1>Hello from Use</h1>");
+    await next();
+    await context.Response.WriteAsync("<h1>Hello again from Use</h1>");
+});
+
+app.Run(async context => await context.Response.WriteAsync("<h1>Hello from Run</h1>"));
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+18. Run the site, all three headings appear in the browser.
+19. Add UseFileServer which will serve static pages from wwwroot.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.UseFileServer();
+
+app.Use(async (context, next) =>
+{
+    await context.Response.WriteAsync("<h1>Hello from Use</h1>");
+    await next();
+    await context.Response.WriteAsync("<h1>Hello again from Use</h1>");
+});
+
+app.Run(async context => await context.Response.WriteAsync("<h1>Hello from Run</h1>"));
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+20. Run the site, the headings still appear in the browser because there are no static files yet.

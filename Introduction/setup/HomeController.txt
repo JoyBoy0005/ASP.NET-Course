@@ -1,0 +1,63 @@
+1. Create the Controllers folder under the project.
+2. Right-click the Controllers folder and select Add / Controller..., select MVC Controller - Empty and accept the default name of HomeController.cs.
+3. Run the site, a hard refresh may be necessary. A new error will appear. This error indicates that the view for the Index action wasn't found.
+4. Change the return type to a string and return one.
+--------------------------------------------------------------------------------------------------------------------------
+public IActionResultstring Index()
+{
+    return View()"Hello from HomeController / Index";
+}
+--------------------------------------------------------------------------------------------------------------------------
+5. Run the site, the output from the Index method appears.
+6. Change the return type back to IActionResult and return a ContentResult.
+--------------------------------------------------------------------------------------------------------------------------
+public stringIActionResult Index()
+{
+    return new ContentResult { Content = "Hello from HomeController / Index" };
+}
+--------------------------------------------------------------------------------------------------------------------------
+7. Run the site, the output is unchanged.
+Program.cs
+8. Note that the Home controller responds before the static files.
+9. Move app.UseFileServer statement before the app.UseRouting statement.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllersWithViews();
+
+var app = builder.Build();
+
+app.UseFileServer();
+
+app.UseRouting();
+
+app.UseFileServer();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+8. Run the site, note that the static page is served.
+9. Move app.UseFileServer statement back to follow the app.UseRouting statement.
+--------------------------------------------------------------------------------------------------------------------------
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllersWithViews();
+
+var app = builder.Build();
+
+app.UseFileServer();
+
+app.UseRouting();
+
+app.UseFileServer();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
+--------------------------------------------------------------------------------------------------------------------------
+10. Run the site, note that the Home controller responds again.

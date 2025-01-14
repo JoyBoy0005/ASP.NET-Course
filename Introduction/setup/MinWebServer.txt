@@ -1,0 +1,83 @@
+This part of the walkthrough will set up a minimum web server.
+
+1. Click Create a new project.
+Language: C#
+Project type: Console
+Select the Console App template
+Click Next
+
+2. Configure your new project
+Project name: MinWebServer
+Location: a folder of your choosing
+Solution name: MinWebServer
+Place solution and project in the same directory: unselected
+Click Next
+
+3. Additional information
+Framework: .NET 8.0
+Do not use top-level statements: unselected
+Click Create
+
+4. Program.cs
+This is how C# console apps can look now with top-level statements. This is the program entry point.
+Control+Click the link on line 1 to access the documentation about the new console template.
+Run the program. The output is as expected. Notice in the output that the return code is 0.
+Modify the code to return 1.
+--------------------------------------------------------------------------------------------------------------------------
+// See https://aka.ms/new-console-template for more information
+Console.WriteLine("Hello, World!");
+return 1;
+--------------------------------------------------------------------------------------------------------------------------
+5. Run the program. Notice in the output that the return code is now 1. The compiler handled the change to the implicit method signature.
+6. Delete the existing code.
+--------------------------------------------------------------------------------------------------------------------------
+// See https://aka.ms/new-console-template for more information
+Console.WriteLine("Hello, World!");
+return 1;
+
+--------------------------------------------------------------------------------------------------------------------------
+7. In Solution Explorer, right-click the project and select Manage NuGet Packages...
+8. Click the Browse tab and search for kestrel. Kestrel itself has not been deprecated, just this package but is still useful for this example. Install Microsoft.AspNetCore.Server.Kestrel.
+9. Begin creating a new web server. Invoke quick actions (Ctrl+.) to add the using Microsoft.AspNetCore.Hosting; directive.
+--------------------------------------------------------------------------------------------------------------------------
+using Microsoft.AspNetCore.Hosting;
+new WebHostBuilder()
+--------------------------------------------------------------------------------------------------------------------------
+10. Continue, use quick actions to add the using Microsoft.AspNetCore.Builder; directive when you get to Run().
+
+--------------------------------------------------------------------------------------------------------------------------
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+new WebHostBuilder()
+    .UseKestrel()
+    .Configure(app => app.Run(context => context.Response))
+--------------------------------------------------------------------------------------------------------------------------
+
+11. Continue, use quick actions to add the using Microsoft.AspNetCore.Http; directive when you get to WriteAsync.
+--------------------------------------------------------------------------------------------------------------------------
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+new WebHostBuilder()
+    .UseKestrel()
+    .Configure(app => app.Run(context => context.Response.WriteAsync))
+--------------------------------------------------------------------------------------------------------------------------
+12. Finish the statement.
+
+--------------------------------------------------------------------------------------------------------------------------
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+new WebHostBuilder()
+    .UseKestrel()
+    .Configure(app => app.Run(context => context.Response.WriteAsync("<h1>Minimum Web Server</h1>")))
+    .Build()
+    .Run();
+--------------------------------------------------------------------------------------------------------------------------
+13. Run the program.
+
+14. From the console window that appears, copy one of the URLs and paste it into a browser.
+
+15. In the console window, shut down the application.
+
+16. From the File menu, close the solution.

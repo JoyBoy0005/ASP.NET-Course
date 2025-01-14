@@ -1,0 +1,61 @@
+This part of the walkthrough will set up a console app that doesn't use top-level statements.
+
+1. Start Visual Studio.
+
+2. Click Create a new project.
+
+Language: C#
+Project type: Console
+Select the Console App template
+Click Next
+
+Configure your new project
+Project name: DeleteMe
+Location: a folder of your choosing
+Solution name: DeleteMe
+Place solution and project in the same directory: unselected
+Click Next
+
+Additional information
+Framework: .NET 8.0
+Do not use top-level statements: selected
+Click Create
+
+3. Program.cs
+This is how C# console apps have looked for years.
+Press Ctrl+F5 to run the program. The output is as expected. Notice in the output that the return code is 0. This is the default return value from a console program and indicates "success"; any other return value is typically interpreted as an error.
+Modify Main to return 1.
+
+--------------------------------------------------------------------------------------------------------------------------
+namespace DeleteMe
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Hello, World!");
+            return 1;
+        }
+    }
+}
+--------------------------------------------------------------------------------------------------------------------------
+
+4. Run the program. It doesn't compile; inspect the error.
+5. Change the return type to int.
+
+--------------------------------------------------------------------------------------------------------------------------
+namespace DeleteMe
+{
+    internal class Program
+    {
+        static voidint Main(string[] args)
+        {
+            Console.WriteLine("Hello, World!");
+            return 1;
+        }
+    }
+}
+--------------------------------------------------------------------------------------------------------------------------
+
+6. un the program. Notice in the output that the return code is now 1.
+7. From the File menu, close the solution.
